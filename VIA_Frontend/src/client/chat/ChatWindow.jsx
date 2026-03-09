@@ -1,22 +1,40 @@
-// export default function ChatWindow() {
-//   return (
-//     <div className="flex-1 flex items-center justify-center bg-gray-50">
-//       <div className="text-center">
-//        <img className="w-130 mx-auto mb-6" src="/photo/Nochatimg.png" alt="No chat" />
-//         <h2 className="text-3xl font-semibold text-gray-600">
-//           No chat selected
-//         </h2>
-//         <p className="text-gray-400 mt-2">
-//           Select a conversation to start messaging
-//         </p>
-//       </div>
-//     </div>
-//   )
-// }
+
+
+import {
+  FaUserPlus,
+  FaUserMinus,
+  FaVideo,
+  FaSignOutAlt,
+  FaLock,
+  FaMicrophone,
+  FaPaperPlane
+} from "react-icons/fa"
 
 import { useEffect, useState } from "react"
 
 export default function ChatWindow({ selectedChat }) {
+
+function IconButton({ icon, label, color }) {
+
+  return (
+    <div className="relative group flex flex-col items-center">
+
+      <button
+        className={`${color} text-white p-3 rounded-lg hover:scale-105 transition`}
+      >
+        {icon}
+      </button>
+
+      {/* TOOLTIP */}
+
+      <span className="absolute top-12 scale-0 group-hover:scale-100 transition bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+        {label}
+      </span>
+
+    </div>
+  )
+}
+
 
   const colors = [
     "text-purple-600",
@@ -39,7 +57,7 @@ export default function ChatWindow({ selectedChat }) {
   }, [])
 
   // 🔹 NO CHAT SELECTED
-  if (!selectedChat) {
+  if (selectedChat) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -62,62 +80,87 @@ export default function ChatWindow({ selectedChat }) {
   }
 
   // 🔹 CHAT SELECTED UI
-  return (
-    <div className="flex flex-col flex-1 bg-gray-100">
+  
+
+   return (
+    <div className="flex-1 flex flex-col bg-gray-100 mx-5 mb-5 mt-5">
 
       {/* HEADER */}
-      <div className="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm">
 
-        <h2 className={`text-xl font-bold ${colors[colorIndex]}`}>
-          {selectedChat.name}
-        </h2>
+      <div className="flex justify-between items-center bg-white shadow px-8 py-6 rounded-md px-3">
 
-        <div className="flex gap-3">
-          <button className="bg-blue-500 text-white px-3 py-2 rounded-lg">
-            📹
-          </button>
+        {/* LEFT */}
 
-          <button className="bg-red-500 text-white px-3 py-2 rounded-lg">
-            🔒
-          </button>
+        <div className="flex items-center gap-6">
+          <h2 className="text-2xl font-semibold text-purple-700">
+            YADAV
+          </h2>
+
+          <span className="text-lg font-medium text-gray-700">
+            VIKASH KUMAR,
+          </span>
         </div>
 
+
+        {/* RIGHT ICONS */}
+
+        <div className="flex items-center gap-4">
+
+          <IconButton
+            icon={<FaUserPlus />}
+            label="Add User"
+            color="bg-blue-600"
+          />
+
+          <IconButton
+            icon={<FaUserMinus />}
+            label="Remove User"
+            color="bg-red-500"
+          />
+
+          <IconButton
+            icon={<FaVideo />}
+            label="Video Call"
+            color="bg-blue-600"
+          />
+
+          <IconButton
+            icon={<FaSignOutAlt />}
+            label="Exit Room"
+            color="bg-red-500"
+          />
+
+          <IconButton
+            icon={<FaLock />}
+            label="Lock Room"
+            color="bg-red-500"
+          />
+
+        </div>
       </div>
 
-      {/* MESSAGES AREA */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
 
-        {/* example messages */}
+      {/* CHAT AREA */}
 
-        <div className="flex justify-start">
-          <div className="bg-white px-4 py-2 rounded-xl shadow">
-            Hello Vikash 👋
-          </div>
-        </div>
+      <div className="flex-1"></div>
 
-        <div className="flex justify-end">
-          <div className="bg-blue-500 text-white px-4 py-2 rounded-xl shadow">
-            Hi Yadav!
-          </div>
-        </div>
 
-      </div>
+      {/* INPUT AREA */}
 
-      {/* MESSAGE INPUT */}
-      <div className="p-4 bg-white border-t flex items-center gap-3">
+      <div className="flex items-center gap-3 bg-white ">
 
         <input
           type="text"
           placeholder="Type a message..."
-          className="flex-1 border rounded-lg px-4 py-3 focus:outline-none"
+           className="flex-1 border border-gray-200 rounded-md px-3 py-2 outline-none"
         />
 
-        <button className="bg-blue-600 text-white px-4 py-3 rounded-lg">
-          🎤
+        <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+          <FaMicrophone />
         </button>
 
-        <button className="bg-blue-600 text-white px-4 py-3 rounded-lg">
-          ➤
+        <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+          <FaPaperPlane />
         </button>
 
       </div>
