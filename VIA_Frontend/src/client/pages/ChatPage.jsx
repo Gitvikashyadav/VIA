@@ -3,12 +3,17 @@
 import { ct } from "../../app/App";
 import ChatSidebar from "../chat/ChatSiderbar";
 import ChatWindow from "../chat/ChatWindow";
-import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect ,useState} from "react";
+import { useNavigate,useOutletContext } from "react-router-dom";
+
 
 export default function ChatPage() {
 let obj=useContext(ct)
 let navigate=useNavigate()
+const [selectedChat, setSelectedChat] = useState(null)
+
+const { sidebarOpen } = useOutletContext()
+ 
 
 useEffect(()=>{
  console.log(obj);
@@ -20,9 +25,22 @@ useEffect(()=>{
 
 },[])
   return (
-    <>
-      <ChatSidebar/>
-     <ChatWindow/>
+    
+    
+     <>
+
+
+        {sidebarOpen && (
+          <ChatSidebar
+            selectedChat={selectedChat}
+            setSelectedChat={setSelectedChat}
+          />
+        )}
+
+        <ChatWindow selectedChat={selectedChat} />
+
+    
+
     </>
   )
 }

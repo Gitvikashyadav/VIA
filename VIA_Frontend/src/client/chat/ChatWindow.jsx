@@ -57,12 +57,12 @@ function IconButton({ icon, label, color }) {
   }, [])
 
   // 🔹 NO CHAT SELECTED
-  if (selectedChat) {
+  if (!selectedChat) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <img
-            className="w-80 mx-auto mb-6"
+            className="w-250 mx-auto mb-6"
             src="/photo/Nochatimg.png"
             alt="No chat"
           />
@@ -92,8 +92,9 @@ function IconButton({ icon, label, color }) {
         {/* LEFT */}
 
         <div className="flex items-center gap-6">
+          
           <h2 className="text-2xl font-semibold text-purple-700">
-            YADAV
+            {selectedChat.name}
           </h2>
 
           <span className="text-lg font-medium text-gray-700">

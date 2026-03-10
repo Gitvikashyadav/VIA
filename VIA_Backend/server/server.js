@@ -1,8 +1,10 @@
 require("dotenv").config({ path: "./server/.env" })
 
+const http = require("http")
 const express = require("express")
 const cors = require("cors")
 const connectDB = require("./config/DB_conn")
+
 
 const app = express()
 
@@ -24,3 +26,10 @@ app.listen(PORT, () => {
 
 const authRoutes = require("./routes/authRoutes")
 app.use("/api/auth", authRoutes)
+
+
+
+const chatRoutes = require("./routes/chatRoutes")
+
+app.use("/api/chat", chatRoutes)
+
