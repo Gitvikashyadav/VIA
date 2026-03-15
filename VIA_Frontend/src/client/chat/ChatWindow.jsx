@@ -12,7 +12,7 @@ import {
 
 
 
-import { useContext, useState ,useEffect} from "react"
+import { useContext, useState ,useEffect,useRef} from "react"
 import axios from "axios"
 import { ct } from "../../app/App"
 
@@ -229,7 +229,7 @@ const DeleteRoom=async()=>{
 //Chat logic starta here
   const [messages, setMessages] = useState([])
   const [text, setText] = useState("")
- console.log("server message ",messages[0]);
+ 
  
   let  roomId
   selectedChat?roomId=selectedChat._id:roomId=""
@@ -283,17 +283,27 @@ message: text
 })
 
 setText("")
-console.log(text);
+
 
 
 }
 
 
 
-
 //Chat logic End
 
 
+
+//chat Container logic
+
+const chatRef = useRef();
+
+useEffect(() => {
+  chatRef.current?.scrollTo({
+    top: chatRef.current.scrollHeight,
+    behavior: "smooth",
+  });
+}, [messages]);
 
 
 
@@ -415,13 +425,40 @@ function IconButton({ icon, label, color }) {
 
         </div>
       </div>
-
-
+       
+        
       {/* CHAT AREA */}
 
-      <div className="flex-1">
+      {/* <div className="flex-1">
        { messages[0]?messages.map((obj)=>obj.message):"pending..."}
+      </div> */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3" ref={chatRef}>
+ 
+  {messages.length ? (
+    messages.map((msg) => (
+  <div
+    key={msg._id}
+    className={`flex ${
+      String(msg.sender._id) === String(userId)
+        ? "justify-end"
+        : "justify-start"
+    }`}
+  >
+        <div
+          className={`px-4 py-2 max-w-xs rounded-lg ${
+            String(msg.sender._id) === String(userId)
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 text-black"
+          }`}
+        >
+          {msg.message}
+        </div>
       </div>
+    ))
+  ) : (
+    <p className="text-center text-gray-400">No messages yet</p>
+  )}
+</div>
 
 
       {/* INPUT AREA */}

@@ -29,8 +29,9 @@ module.exports = (io) => {
         roomId,
         message
       })
+      const messageWithUser = await newMessage.populate("sender", "_id name")
 
-      io.to(roomId).emit("receiveMessage", newMessage)
+      io.to(roomId).emit("receiveMessage", messageWithUser)
 
     })
 
