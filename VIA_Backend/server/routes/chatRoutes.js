@@ -6,7 +6,7 @@ createRoom,
 deleteRoom,
 addUserToRoom,
 removeUserFromRoom,
-getRoomsByCreator,
+getUserRooms,
 getRoomUsers,
 sendMessage,
 getMessages
@@ -16,7 +16,7 @@ router.post("/create-room", createRoom)
 router.post("/Delete-room", deleteRoom)
 router.post("/add-users",addUserToRoom)
 router.post("/Remove-RoomUsers",removeUserFromRoom)
-router.get("/creator-rooms/:userId", getRoomsByCreator)
+router.get("/creator-rooms/:userId", getUserRooms)
 router.get("/rooms-users/:RoomId", getRoomUsers)
 
 router.post("/send-message", sendMessage)

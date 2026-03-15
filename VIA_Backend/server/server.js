@@ -24,9 +24,44 @@ app.use(express.json())
 
 const PORT = process.env.PORT || 5000
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`)
+
+
+
+
+
+
+
+
+
+// create http server
+const server = http.createServer(app)
+const { Server } = require("socket.io")
+
+// create socket server
+const io = new Server(server,{
+  cors:{
+    origin:"http://localhost:5173"
+  }
 })
+
+// import socket logic
+const chatSocket = require("./sockets/chatSocket")
+
+// run socket logic
+chatSocket(io)
+
+// start server
+server.listen(PORT,()=>{
+  console.log(`🚀 Server running on port ${PORT}`)
+})
+
+
+
+
+
+
+
+
 
 
 app.use("/api/auth", authRoutes)

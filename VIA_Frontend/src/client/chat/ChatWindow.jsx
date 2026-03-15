@@ -12,10 +12,15 @@ import {
 
 
 
-import { useContext, useState } from "react"
+import { useContext, useState ,useEffect} from "react"
 import axios from "axios"
 import { ct } from "../../app/App"
-import { Flag } from "lucide-react"
+
+
+import socket from "../socket/socket"
+
+
+
 
 export default function ChatWindow({ refreshSidebar,selectedChat, }) {
   
@@ -30,6 +35,19 @@ export default function ChatWindow({ refreshSidebar,selectedChat, }) {
   const [selectedUsers, setSelectedUsers] = useState([])
   const [selectedRoomUsers, setSelectedRoomUsers] = useState([])
  
+
+
+
+ 
+
+
+
+
+
+
+
+
+
 
 
 //Fetch all user
@@ -206,6 +224,81 @@ const DeleteRoom=async()=>{
 
 
 
+
+
+//Chat logic starta here
+  const [messages, setMessages] = useState([])
+  const [text, setText] = useState("")
+ console.log("server message ",messages[0]);
+ 
+  let  roomId
+  selectedChat?roomId=selectedChat._id:roomId=""
+  
+   let userId=userData.token._id
+
+
+
+// join room
+useEffect(() => {
+
+    socket.emit("joinRoom", roomId)
+
+    axios.get(`http://localhost:5000/api/chat/messages/${roomId}`)
+    .then(res => {
+    setMessages(res.data)
+    })
+
+    return () => {
+      socket.emit("leaveRoom", roomId)
+    }
+
+}, [roomId])
+
+
+
+
+
+
+
+// receive message
+useEffect(() => {
+
+  socket.on("receiveMessage", (msg) => {
+
+  setMessages(prev => [...prev, msg])
+
+  })
+
+}, [])
+
+
+
+
+const sendMessage = () => {
+
+socket.emit("sendMessage", {
+roomId,
+senderId: userId,
+message: text
+})
+
+setText("")
+console.log(text);
+
+
+}
+
+
+
+
+//Chat logic End
+
+
+
+
+
+
+
 function IconButton({ icon, label, color }) {
 
 
@@ -326,7 +419,9 @@ function IconButton({ icon, label, color }) {
 
       {/* CHAT AREA */}
 
-      <div className="flex-1"></div>
+      <div className="flex-1">
+       { messages[0]?messages.map((obj)=>obj.message):"pending..."}
+      </div>
 
 
       {/* INPUT AREA */}
@@ -337,13 +432,17 @@ function IconButton({ icon, label, color }) {
           type="text"
           placeholder="Type a message..."
            className="flex-1 border border-gray-200 rounded-md px-3 py-2 outline-none"
+          onChange={(e)=>setText(e.target.value)}
+          value={text}
         />
-
+   
         <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
           <FaMicrophone />
         </button>
 
-        <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+        <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+           onClick={sendMessage}
+        >
           <FaPaperPlane />
         </button>
 

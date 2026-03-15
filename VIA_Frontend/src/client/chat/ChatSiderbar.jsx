@@ -14,7 +14,7 @@ export default function ChatSidebar({ Refresh,selectedChat, setSelectedChat }) {
   
 
 
-//fetch All Room who user creted previously
+//fetch All Room who user who rooms user exist
 
 useEffect(()=>{
   
@@ -22,9 +22,10 @@ useEffect(()=>{
    
     
     
-   const Data=await axios.get(`http://localhost:5000/api/chat/creator-rooms/${userData.token._id}`)
+   const RooData=await axios.get(`http://localhost:5000/api/chat/creator-rooms/${userData.token._id}`)
    
-   setRooms(Data.data)
+   setRooms(RooData.data.rooms)
+  console.log("All Rooms",RooData.data)
    setSelectedChat()
   }
   findAllRoom()

@@ -166,21 +166,29 @@ exports.removeUserFromRoom = async (req, res) => {
 
 /// GET ALL ROOMS CREATED BY USER
 
-exports.getRoomsByCreator = async (req, res) => {
+exports.getUserRooms = async (req, res) => {
 
   try {
-    
-    
-    
+
+    const userId = req.params.userId
+
+    // find rooms where userId exists in users array
     const rooms = await ChatRoom.find({
-      createdBy: req.params.userId
-    }).populate("users", "name email")
-    
-    res.json(rooms)
+      users: userId
+    })
+    .populate("users", "name email")
+    .populate("createdBy", "name email")
+
+    res.json({
+      success: true,
+      rooms
+    })
 
   } catch (error) {
 
-    res.status(500).json({ error: error.message })
+    res.status(500).json({
+      error: error.message
+    })
 
   }
 
