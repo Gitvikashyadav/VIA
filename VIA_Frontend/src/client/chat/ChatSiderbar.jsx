@@ -1,22 +1,64 @@
-
-import { useState } from "react"
+import axios from "axios"
+import { useState ,useContext,useEffect,createContext} from "react"
  import { Plus,Users } from "lucide-react"
+import { ct } from "../../app/App"
 
-export default function ChatSidebar({ selectedChat, setSelectedChat }) {
+export default function ChatSidebar({ Refresh,selectedChat, setSelectedChat }) {
   const [rooms, setRooms] = useState([])
   const [roomName, setRoomName] = useState("")
+  const userData=useContext(ct)
 
-  const createRoom = () => {
+ const r=Refresh
+  
+  console.log(r);
+  
+
+
+//fetch All Room who user creted previously
+
+useEffect(()=>{
+  
+  const findAllRoom=async ()=>{
+   
+    
+    
+   const Data=await axios.get(`http://localhost:5000/api/chat/creator-rooms/${userData.token._id}`)
+   
+   setRooms(Data.data)
+   setSelectedChat()
+  }
+  findAllRoom()
+
+},[Refresh])
+
+
+
+
+
+
+//Creater new room
+  const createRoom = async () => {
     if (!roomName.trim()) return
+    
+    
 
     const newRoom = {
-      id: Date.now(),
-      name: roomName
-    }
-
-    setRooms([...rooms, newRoom])
+       createdBy: userData.token._id,
+      _id: Date.now(),
+      name: roomName,
+      isGroup:true
+    } 
+   const RoomData=await axios.post("http://localhost:5000/api/chat/create-room",newRoom)
+   console.log(RoomData.data.room);
+   
+   
+    setRooms([...rooms, RoomData.data.room])
     setRoomName("")
   }
+
+
+
+
 
   return (
     <div className="w-80 h-full bg-white flex flex-col shadow-[6px_0_8px_rgba(0,0,0,0.08)]">
@@ -29,15 +71,15 @@ export default function ChatSidebar({ selectedChat, setSelectedChat }) {
             No rooms
           </h2>
         ) : (
-          <div className="space-y-3">
+          <div  className="space-y-3 flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400">
 
             {rooms.map((room) => (
 
               <div
-                key={room.id}
+                key={room._id}
                 onClick={() => setSelectedChat(room)}
                 className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer 
-                ${selectedChat?.id === room.id
+                ${selectedChat?.id === room._id
                 ? "bg-blue-100"
                 : "bg-gray-100 hover:bg-gray-200"
                 }`}

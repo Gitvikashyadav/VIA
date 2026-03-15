@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken")
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body
-    console.log(" ippppp")
+    
     // Check if user exists
     const userExists = await User.findOne({ email })
     if (userExists) {
@@ -42,7 +42,7 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body
-   console.log(email,password);
+   
    
     // Check user
     const user = await User.findOne({ email })

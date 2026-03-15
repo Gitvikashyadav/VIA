@@ -13,10 +13,17 @@ let navigate=useNavigate()
 const [selectedChat, setSelectedChat] = useState(null)
 
 const { sidebarOpen } = useOutletContext()
+const [Refresh,setRefresh]=useState(false)
  
+const refreshSidebar = () => {
+  
+  
+  setRefresh(prev => !prev)
+  
+}
 
 useEffect(()=>{
- console.log(obj);
+ 
  if(obj.token.token==""){
   navigate("/")
 
@@ -31,13 +38,13 @@ useEffect(()=>{
 
 
         {sidebarOpen && (
-          <ChatSidebar
+          <ChatSidebar Refresh={Refresh}
             selectedChat={selectedChat}
             setSelectedChat={setSelectedChat}
           />
         )}
 
-        <ChatWindow selectedChat={selectedChat} />
+        <ChatWindow refreshSidebar={refreshSidebar} selectedChat={selectedChat} />
 
     
 

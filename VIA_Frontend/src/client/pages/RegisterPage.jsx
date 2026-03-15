@@ -44,7 +44,7 @@ export default function RegisterPage() {
       setSuccess("Account created successfully 🎉")
 
       setTimeout(() => {
-        navigate("/login")
+        navigate("/")
       }, 1500)
 
     } catch (err) {
@@ -151,7 +151,7 @@ export default function RegisterPage() {
         <p className="text-center text-sm text-gray-500 mt-6">
           Already have an account?{" "}
           <Link
-            to="/login"
+            to="/"
             className="text-blue-600 font-medium hover:underline"
           >
             Login

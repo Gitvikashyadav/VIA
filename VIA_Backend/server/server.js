@@ -5,6 +5,10 @@ const express = require("express")
 const cors = require("cors")
 const connectDB = require("./config/DB_conn")
 
+const authRoutes = require("./routes/authRoutes")
+const chatRoutes = require("./routes/chatRoutes")
+const UserRouter  = require("./routes/userRoute")
+
 
 const app = express()
 
@@ -24,12 +28,13 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`)
 })
 
-const authRoutes = require("./routes/authRoutes")
+
 app.use("/api/auth", authRoutes)
 
 
 
-const chatRoutes = require("./routes/chatRoutes")
+
 
 app.use("/api/chat", chatRoutes)
 
+app.use("/api/user",UserRouter)

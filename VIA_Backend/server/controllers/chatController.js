@@ -1,36 +1,209 @@
 const ChatRoom = require("../models/chatRoomModel")
 const Message = require("../models/messageModel")
 
+
+
 // CREATE ROOM
 
 exports.createRoom = async (req, res) => {
 
-try {
+  try {
 
-const { name, users, isGroup } = req.body
+    const { name, createdBy } = req.body
 
-const room = await ChatRoom.create({
-name,
-users,
-isGroup
-})
+    const room = await ChatRoom.create({
+      name,
+      createdBy,
+      users: [createdBy] // creator automatically added
+    })
 
-res.json({
-success: true,
-room
-})
+    res.json({
+      success: true,
+      roomId: room._id,
+      room
+    })
 
-} catch (error) {
+  } catch (error) {
+
+    res.status(500).json({ error: error.message })
+
+  }
+
+}
+
+
+
+
+
+//Delete Room 
+
+exports.deleteRoom = async (req, res) => {
+
+  try {
+
+    const { roomId, userId } = req.body
     
     
+    // check room exists
+    const room = await ChatRoom.findById(roomId)
 
-res.status(500).json({
-error: error.message
-})
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: "Room not found"
+      })
+    }
+
+    // only creator can delete
+    if (room.createdBy.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Only room creator can delete the room"
+      })
+    }
+
+    await ChatRoom.findByIdAndDelete(roomId)
+
+    res.json({
+      success: true,
+      message: "Room deleted successfully"
+    })
+
+  } catch (error) {
+
+    res.status(500).json({
+      error: error.message
+    })
+
+  }
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+//// ADD USER TO ROOM
+
+exports.addUserToRoom = async (req, res) => {
+
+  try {
+  
+  console.log("Add user to room ");
+  
+    const { roomId, users } = req.body
+    console.log(users);
+    
+    
+    const room = await ChatRoom.findByIdAndUpdate(
+      roomId,
+      { $addToSet: { users: users } }, // prevents duplicates
+      { new: true }
+    )
+
+    res.json({
+      success: true,
+      room
+    })
+
+  } catch (error) {
+
+    res.status(500).json({ error: error.message })
+
+  }
+
 }
+
+
+
+
+
+
+//Remove User from room
+exports.removeUserFromRoom = async (req, res) => {
+
+  try {
+
+    console.log("Remove user from room")
+
+    const { roomId, users } = req.body
+
+   
+ 
+    const room = await ChatRoom.findByIdAndUpdate(
+      roomId,
+      { $pull: { users: { $in: users } } },
+      { new: true }
+    )
+
+    res.json({
+      success: true,
+      room
+    })
+
+  } catch (error) {
+
+    res.status(500).json({ error: error.message })
+
+  }
+
+}
+
+
+
+
+
+
+
+
+/// GET ALL ROOMS CREATED BY USER
+
+exports.getRoomsByCreator = async (req, res) => {
+
+  try {
+    
+    
+    
+    const rooms = await ChatRoom.find({
+      createdBy: req.params.userId
+    }).populate("users", "name email")
+    
+    res.json(rooms)
+
+  } catch (error) {
+
+    res.status(500).json({ error: error.message })
+
+  }
+
+}
+
+
+
+
+//Get All user from on Specific Room
+exports.getRoomUsers=async(req,res)=>{
+try{
+ console.log("find all rooms users",req.params.RoomId);
+ 
+  const data=await ChatRoom.find({_id:req.params.RoomId}).populate("users", "name email")
+  res.json(data)
+
+
+}catch(error){
+  res.status.json({error:error.message})
+
+}
+}
+
 
 // SEND MESSAGE
 
@@ -67,20 +240,21 @@ error: error.message
 exports.getMessages = async (req, res) => {
 
 try {
-   const roomId = req.params.roomId.trim()
+      const roomId = req.params.roomId.trim()
 
-const messages = await Message.find({"roomId":roomId}).populate("sender", "name email")
+      const messages = await Message.find({"roomId":roomId}).populate("sender", "name email")
 
 
 
-res.json(messages)
+      res.json(messages)
 
-} catch (error) {
+   } catch (error) 
+   {
 
-res.status(500).json({
-error: error.message
-})
-
+      res.status(500).json({
+      error: error.message
+      })
 }
 
 }
+

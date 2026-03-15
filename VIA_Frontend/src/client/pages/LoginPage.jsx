@@ -30,8 +30,8 @@ const obj=useContext(ct)
      
      const res=await axios.post("http://localhost:5000/api/auth/login",formData)
      setSuccess("successfully Login 🎉 ")
-     console.log("Response Dtataaa",res.data);
-     obj.updateToken({"token":res.data.token,"name":res.data.user.name})
+    
+     obj.updateToken({"token":res.data.token,"name":res.data.user.name,"_id":res.data.user._id})
      navigate("/chatpage")
   
   }catch(err){
