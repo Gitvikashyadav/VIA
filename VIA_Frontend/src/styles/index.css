@@ -48,3 +48,15 @@
   -webkit-text-fill-color: transparent;
   animation: zigzagGradient 10s ease-in-out infinite;
 }
+
+
+/* Hide scrollbar but keep scrolling */
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

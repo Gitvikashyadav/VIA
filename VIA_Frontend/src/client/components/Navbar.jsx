@@ -19,17 +19,16 @@ const logoutFun=()=>{
 }
 
   return (
-    <div className="h-16 bg-primary text-white flex items-center justify-between px-6 shadow-md">
+    <div className="h-16 bg-primary text-white flex items-center justify-between px-6 shadow-md flex-shrink-0">
       <div className="flex items-center gap-3">
 
         <button onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? <X size={28}/> : <Menu size={28}/>}
         </button>
 
-        <h1 className="text-xl font-semibold">
+        <h1 className="text-lg md:text-xl font-semibold hidden sm:block">
           VIA - Video Interaction App
-        </h1>
-
+       </h1>
       </div>
 
       <div className="flex gap-4">

@@ -3,7 +3,7 @@ import { useState ,useContext,useEffect,createContext} from "react"
  import { Plus,Users } from "lucide-react"
 import { ct } from "../../app/App"
 
-export default function ChatSidebar({ Refresh,selectedChat, setSelectedChat }) {
+export default function ChatSidebar({ Refresh,selectedChat, setSelectedChat ,isMobile}) {
   const [rooms, setRooms] = useState([])
   const [roomName, setRoomName] = useState("")
   const userData=useContext(ct)
@@ -62,17 +62,21 @@ useEffect(()=>{
 
 
   return (
-    <div className="w-80 h-full bg-white flex flex-col shadow-[6px_0_8px_rgba(0,0,0,0.08)]">
+   <div
+  className={`${
+    isMobile && selectedChat ? "hidden" : "flex"
+  } w-80 h-full bg-white flex-col shadow-[6px_0_8px_rgba(0,0,0,0.08)] overflow-hidden min-h-0`}
+>
 
       {/* Room List */}
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 bg-gray-100 overflow-y-auto min-h-0">
 
         {rooms.length === 0 ? (
           <h2 className="text-2xl font-semibold text-gray-700">
             No rooms
           </h2>
         ) : (
-          <div  className="space-y-3 flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400">
+          <div className="space-y-3 p-4">
 
             {rooms.map((room) => (
 
