@@ -8,7 +8,7 @@ const connectDB = require("./config/DB_conn")
 const authRoutes = require("./routes/authRoutes")
 const chatRoutes = require("./routes/chatRoutes")
 const UserRouter  = require("./routes/userRoute")
-
+const agoraRoutes = require("./routes/agoraRoutes")
 
 const app = express()
 
@@ -64,12 +64,18 @@ server.listen(PORT,()=>{
 
 
 
+
 app.use("/api/auth", authRoutes)
-
-
 
 
 
 app.use("/api/chat", chatRoutes)
 
 app.use("/api/user",UserRouter)
+
+
+
+//Agora Routers 
+
+
+app.use("/api/agora", agoraRoutes)
