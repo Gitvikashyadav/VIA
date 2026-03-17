@@ -43,6 +43,8 @@ export default function MainLayout() {
     return () => window.removeEventListener("resize", checkScreen)
   }, [])
 
+  console.log(isMobile);
+  
   return (
     <div className="h-screen flex flex-col overflow-hidden">
 

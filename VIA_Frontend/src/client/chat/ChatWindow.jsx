@@ -7,18 +7,18 @@ import {
   FaMicrophone,
   FaPaperPlane,
 } from "react-icons/fa";
-
+import { ArrowLeft, MoreVertical } from "lucide-react";
 import { FaArrowUp } from "react-icons/fa";
 import { useContext, useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { ct } from "../../app/App";
 import socket from "../socket/socket";
+import { useOutletContext } from "react-router-dom";
 
 export default function ChatWindow({
   refreshSidebar,
   selectedChat,
-  isMobile,
-  setSidebarOpen,
+  setSelectedChat,
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const userData = useContext(ct);
@@ -29,6 +29,7 @@ export default function ChatWindow({
   const [Roomusers, setRoomUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedRoomUsers, setSelectedRoomUsers] = useState([]);
+  const { isMobile, sidebarOpen, setSidebarOpen } = useOutletContext();
 
   //Fetch all user
   const fetchUsers = async () => {
@@ -205,7 +206,8 @@ export default function ChatWindow({
   }
 
   // 🔹 NO CHAT SELECTED
-  if (!selectedChat) {
+
+  if ((!selectedChat && !isMobile) || !sidebarOpen) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -228,247 +230,245 @@ export default function ChatWindow({
   }
 
   // 🔹 CHAT SELECTED UI
+  if (selectedChat) {
+    return (
+      <>
+        <div
+          className={`${
+            isMobile && !selectedChat ? "hidden" : "flex"
+          } flex-1 flex-col bg-gray-100 mx-2 mb-2 mt-2 overflow-hidden min-h-0`}
+        >
+          {/* HEADER */}
 
-  return (
-    <>
-      {/* <div className="flex-1 flex flex-col bg-gray-100 mx-5 mb-5 mt-5 overflow-hidden min-h-0"> */}
-      <div
-        className={`${
-          isMobile && !selectedChat ? "hidden" : "flex"
-        } flex-1 flex-col bg-gray-100 mx-2 mb-2 mt-2 overflow-hidden min-h-0`}
-      >
-        {/* HEADER */}
+          <div className="flex justify-between items-center bg-white px-6 py-4 rounded-xl border border-gray-200 shadow-[0_8px_25px_rgba(0,0,0,0.100)]">
+            {/* LEFT */}
 
-        <div className="flex justify-between items-center bg-white shadow px-8 py-6 rounded-md px-3">
-          {/* LEFT */}
+            <div className="flex items-center gap-4">
+              {isMobile && (
+                <button
+                  onClick={() => (setSidebarOpen(true), setSelectedChat(null))}
+                  className="text-xl"
+                >
+                  {/* ← */}
+                  <ArrowLeft size={24} />
+                </button>
+              )}
 
-          {/* <div className="flex items-center gap-6">
-          
-       <h2 className="text-2xl font-semibold zigzagText">
-          {selectedChat.name}
-       </h2>
+              <h2 className="text-2xl zigzagText font-extrabold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent cursor-pointer">
+                {selectedChat.name}
+              </h2>
+            </div>
 
-          <span className="text-lg font-medium text-gray-700">
-            VIKASH KUMAR,
-          </span>
-        </div> */}
-          <div className="flex items-center gap-4">
-            {isMobile && (
-              <button onClick={() => setSidebarOpen(true)} className="text-xl">
-                ←
-              </button>
-            )}
+            {/* RIGHT ICONS */}
 
-            <h2 className="text-xl font-semibold">{selectedChat.name}</h2>
-          </div>
-
-          {/* RIGHT ICONS */}
-
-          {/* <div className="flex items-center gap-4"> */}
-          <div className="flex items-center gap-4">
-            {!isMobile && (
-              <>
-                
-                <div onClick={fetchUsers}>
+            <div className="flex items-center gap-4">
+              {!isMobile && (
+                <>
+                  <div onClick={fetchUsers}>
+                    <IconButton
+                      icon={<FaUserPlus />}
+                      label="Add User"
+                      color="bg-blue-600"
+                    />
+                  </div>
+                  <div onClick={fetchParticularRoomusers}>
+                    <IconButton
+                      icon={<FaUserMinus />}
+                      label="Remove User"
+                      color="bg-red-500"
+                    />
+                  </div>
                   <IconButton
-                    icon={<FaUserPlus />}
-                    label="Add User"
+                    icon={<FaVideo />}
+                    label="Video Call"
                     color="bg-blue-600"
                   />
-                </div>
-                <div onClick={fetchParticularRoomusers}>
+                  <div onClick={DeleteRoom}>
+                    <IconButton
+                      icon={<FaSignOutAlt />}
+                      label="Exit Room"
+                      color="bg-red-500"
+                    />
+                  </div>
                   <IconButton
-                    icon={<FaUserMinus />}
-                    label="Remove User"
+                    icon={<FaLock />}
+                    label="Lock Room"
                     color="bg-red-500"
                   />
+                </>
+              )}
+              {/* //mobile iconsAdd ... menu for mobile */}
+              {isMobile && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowMenu(!showMenu)}
+                    className="text-2xl"
+                  >
+                    {/* ⋮ */}
+                    <MoreVertical size={24} />
+                  </button>
+
+                  {showMenu && (
+                    <div className="absolute right-0 top-10 bg-white shadow-lg rounded-lg w-40 p-2 flex flex-col gap-2">
+                      <button onClick={fetchUsers}>Add User</button>
+                      <button onClick={fetchParticularRoomusers}>
+                        Remove User
+                      </button>
+                      <button>Video Call</button>
+                      <button onClick={DeleteRoom}>Exit Room</button>
+                      <button>Lock Room</button>
+                    </div>
+                  )}
                 </div>
-                <IconButton
-                  icon={<FaVideo />}
-                  label="Video Call"
-                  color="bg-blue-600"
-                />
-                <div onClick={DeleteRoom}>
-                  <IconButton
-                    icon={<FaSignOutAlt />}
-                    label="Exit Room"
-                    color="bg-red-500"
-                  />
+              )}
+            </div>
+          </div>
+
+          {/* CHAT AREA */}
+
+          <div
+            ref={chatRef}
+            className="flex-1 overflow-y-auto min-h-0 p-4 space-y-3 bg-gray-50 scrollbar-hide"
+          >
+            {messages.length ? (
+              messages.map((msg) => (
+                <div
+                  key={msg._id}
+                  className={`flex ${
+                    String(msg.sender._id) === String(userId)
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`px-4 py-2 max-w-xs rounded-lg ${
+                      String(msg.sender._id) === String(userId)
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-200 text-black"
+                    }`}
+                  >
+                    {msg.message}
+                  </div>
                 </div>
-                <IconButton
-                  icon={<FaLock />}
-                  label="Lock Room"
-                  color="bg-red-500"
-                />
-              </>
+              ))
+            ) : (
+              <p className="text-center text-gray-400">No messages yet</p>
             )}
+          </div>
+
+          <button
+            onClick={scrollToTop}
+            className="fixed bottom-24 right-10 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700"
+          >
+            <FaArrowUp />
+          </button>
+
+          {/* INPUT AREA */}
+
+          <div className="flex items-center gap-3 bg-white p-3 ">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              className="flex-1 border border-gray-200 rounded-md px-3 py-2 outline-none"
+              onChange={(e) => setText(e.target.value)}
+              value={text}
+            />
+
+            <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+              <FaMicrophone />
+            </button>
+
+            <button
+              className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+              onClick={sendMessage}
+            >
+              <FaPaperPlane />
+            </button>
           </div>
         </div>
 
-        {/* //mobile iconsAdd ... menu for mobile */}
+        {showModal && (
+          <div className="fixed inset-0 bg-gray-40 bg-opacity-10 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-white w-[450px] rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Add Users</h2>
 
-        {isMobile && (
-          <div className="relative">
-            <button onClick={() => setShowMenu(!showMenu)} className="text-2xl">
-              ⋮
-            </button>
+              <div className="max-h-60 overflow-y-auto">
+                {users.map((user) => (
+                  <div
+                    key={user._id}
+                    className="flex justify-between items-center font-bold   py-2"
+                  >
+                    <span className="bg-gray-200">{user.name}</span>
 
-            {showMenu && (
-              <div className="absolute right-0 top-10 bg-white shadow-lg rounded-lg w-40 p-2 flex flex-col gap-2">
-                <button onClick={fetchUsers}>Add User</button>
-                <button onClick={fetchParticularRoomusers}>Remove User</button>
-                <button>Video Call</button>
-                <button onClick={DeleteRoom}>Exit Room</button>
-                <button>Lock Room</button>
+                    <input
+                      type="checkbox"
+                      onChange={() => handleSelectUser(user._id)}
+                    />
+                  </div>
+                ))}
               </div>
-            )}
+
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={addUsersToRoom}
+                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* CHAT AREA */}
+        {/* RemoveShow Model */}
 
-        <div
-          ref={chatRef}
-          className="flex-1 overflow-y-auto min-h-0 p-4 space-y-3 bg-gray-50 scrollbar-hide"
-        >
-          {messages.length ? (
-            messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`flex ${
-                  String(msg.sender._id) === String(userId)
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
-                <div
-                  className={`px-4 py-2 max-w-xs rounded-lg ${
-                    String(msg.sender._id) === String(userId)
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-200 text-black"
-                  }`}
-                >
-                  {msg.message}
-                </div>
+        {showRemoveModal && (
+          <div className="fixed inset-0 bg-gray-40 bg-opacity-10 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-white w-[450px] rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-semibold mb-4">Remove Users</h2>
+
+              <div className="max-h-60 overflow-y-auto">
+                {Roomusers.map((user) => (
+                  <div
+                    key={user._id}
+                    className="flex justify-between items-center font-bold   py-2"
+                  >
+                    <span className="bg-gray-200">{user.name}</span>
+
+                    <input
+                      type="checkbox"
+                      onChange={() => handleSelectRoomUser(user._id)}
+                    />
+                  </div>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-400">No messages yet</p>
-          )}
-        </div>
 
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-24 right-10 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700"
-        >
-          <FaArrowUp />
-        </button>
-
-        {/* INPUT AREA */}
-
-        <div className="flex items-center gap-3 bg-white p-3 border-t">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="flex-1 border border-gray-200 rounded-md px-3 py-2 outline-none"
-            onChange={(e) => setText(e.target.value)}
-            value={text}
-          />
-
-          <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
-            <FaMicrophone />
-          </button>
-
-          <button
-            className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
-            onClick={sendMessage}
-          >
-            <FaPaperPlane />
-          </button>
-        </div>
-      </div>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-40 bg-opacity-10 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-white w-[450px] rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Add Users</h2>
-
-            <div className="max-h-60 overflow-y-auto">
-              {users.map((user) => (
-                <div
-                  key={user._id}
-                  className="flex justify-between items-center font-bold   py-2"
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => setRemoveShowModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded"
                 >
-                  <span className="bg-gray-200">{user.name}</span>
+                  Cancel
+                </button>
 
-                  <input
-                    type="checkbox"
-                    onChange={() => handleSelectUser(user._id)}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={addUsersToRoom}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-              >
-                OK
-              </button>
+                <button
+                  onClick={RemoveUsersToRoom}
+                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                >
+                  OK
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* RemoveShow Model */}
-
-      {showRemoveModal && (
-        <div className="fixed inset-0 bg-gray-40 bg-opacity-10 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-white w-[450px] rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Remove Users</h2>
-
-            <div className="max-h-60 overflow-y-auto">
-              {Roomusers.map((user) => (
-                <div
-                  key={user._id}
-                  className="flex justify-between items-center font-bold   py-2"
-                >
-                  <span className="bg-gray-200">{user.name}</span>
-
-                  <input
-                    type="checkbox"
-                    onChange={() => handleSelectRoomUser(user._id)}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setRemoveShowModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={RemoveUsersToRoom}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
+        )}
+      </>
+    );
+  }
 }

@@ -44,7 +44,7 @@ useEffect(()=>{
           />
         )}
 
-        <ChatWindow refreshSidebar={refreshSidebar} selectedChat={selectedChat} />
+        <ChatWindow refreshSidebar={refreshSidebar} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />
 
     
 
