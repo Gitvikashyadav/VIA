@@ -1,26 +1,4 @@
-// import { Outlet } from "react-router-dom"
-// import Navbar from "../client/components/Navbar"
-// import { useState } from "react"
-// export default function MainLayout() {
 
-//    const [sidebarOpen, setSidebarOpen] = useState(true)
-//   return (
-   
-
-//     <div className="h-screen flex flex-col overflow-hidden">
-
-//       <Navbar
-//         sidebarOpen={sidebarOpen}
-//         setSidebarOpen={setSidebarOpen}
-//       />
-
-//       <div className="flex flex-1 min-h-0 relative">
-//         <Outlet context={{ sidebarOpen }} />
-//       </div>
-
-//     </div>
-//   )
-// }
 
 
 import { Outlet } from "react-router-dom"
@@ -43,7 +21,7 @@ export default function MainLayout() {
     return () => window.removeEventListener("resize", checkScreen)
   }, [])
 
-  console.log(isMobile);
+  
   
   return (
     <div className="h-screen flex flex-col overflow-hidden">

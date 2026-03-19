@@ -19,6 +19,8 @@ export default function ChatWindow({
   refreshSidebar,
   selectedChat,
   setSelectedChat,
+  setCalls,
+ 
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const userData = useContext(ct);
@@ -278,11 +280,13 @@ export default function ChatWindow({
                       color="bg-red-500"
                     />
                   </div>
-                  <IconButton
-                    icon={<FaVideo />}
-                    label="Video Call"
-                    color="bg-blue-600"
-                  />
+                  <div onClick={() => setCalls(true) }>
+                    <IconButton
+                      icon={<FaVideo />}
+                      label="Video Call"
+                      color="bg-blue-600"
+                    />
+                  </div>
                   <div onClick={DeleteRoom}>
                     <IconButton
                       icon={<FaSignOutAlt />}
@@ -314,7 +318,7 @@ export default function ChatWindow({
                       <button onClick={fetchParticularRoomusers}>
                         Remove User
                       </button>
-                      <button>Video Call</button>
+                      <button onClick={() => setCalls(true)}>Video Call</button>
                       <button onClick={DeleteRoom}>Exit Room</button>
                       <button>Lock Room</button>
                     </div>
