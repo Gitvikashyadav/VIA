@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import axios from "axios";
-
+import socket from "../socket/socket";
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
 
 const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -11,7 +11,8 @@ function VideoCall({
   userId,
   isVideoCall = true,
   setCalls,
-  setSidebarOpen,
+  usersInRoom,
+  setCallTime,
 }) {
   const [remoteUsers, setRemoteUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
@@ -22,7 +23,9 @@ function VideoCall({
   const isSingleUser = remoteUsers.length === 1;
 
   const appId = "19e08d3f4ac840878e0e3acc45cf1da7";
-  const uid = Number(userId.slice(-6), 16) % 100000; // convert to number
+  const uid = userId
+    ? Number(userId.slice(-6), 16) % 100000
+    : Math.floor(Math.random() * 100000);
 
   const handleMicToggle = () => {
     if (!localTracks[0]) return; // 🔥 safety
@@ -54,15 +57,60 @@ function VideoCall({
     }
   };
 
-  const handleEndCall = async () => {
+  useEffect(() => {
+    socket.on("callEnded", async () => {
+      await cleanupCall();
+    });
+
+    return () => socket.off("callEnded");
+  }, [localTracks]);
+
+  // Extract cleanup logic into reusable function
+  const cleanupCall = async () => {
     localTracks.forEach((track) => track.stop());
     localTracks.forEach((track) => track.close());
-
-    await client.leave(); // leave Agora channel
+    await client.leave();
+    setRemoteUsers([]);
+    setLocalTracks([]);
+    setRemoteVideoStatus({});
+    setMicOn(true);
+    setVideoOn(true);
+    setCallTime(null);
     setCalls(false);
   };
 
+  // const handleEndCall = async () => {
+  //   localTracks.forEach((track) => track.stop());
+  //   localTracks.forEach((track) => track.close());
+
+  //   await client.leave(); // leave Agora channel
+  //   setRemoteUsers([]);
+  //   setLocalTracks([]);
+  //   setRemoteVideoStatus({});
+  //   setMicOn(true);
+  //   setVideoOn(true);
+  //   setCallTime(null);
+  //   setCalls(false);
+  // };
+
+  const handleEndCall = async () => {
+    socket.emit("endCall", { roomId, usersInRoom }); // 🔥 notify others
+    await cleanupCall();
+  };
+
+  // ✅ KEY FIX: Re-play remote video whenever remoteUsers or remoteVideoStatus changes
   useEffect(() => {
+    remoteUsers.forEach((user) => {
+      if (remoteVideoStatus[user.uid] && user.videoTrack) {
+        setTimeout(() => {
+          user.videoTrack.play(`remote-${user.uid}`);
+        }, 100);
+      }
+    });
+  }, [remoteUsers, remoteVideoStatus]);
+
+  useEffect(() => {
+    if (!roomId) return; //
     const init = async () => {
       try {
         const uid = Math.floor(Math.random() * 100000);
@@ -88,6 +136,7 @@ function VideoCall({
         client.on("user-published", async (user, mediaType) => {
           await client.subscribe(user, mediaType);
 
+          
           setRemoteUsers((prev) => {
             if (prev.find((u) => u.uid === user.uid)) return prev;
             return [...prev, user];
@@ -133,7 +182,7 @@ function VideoCall({
     return () => {
       client.removeAllListeners();
     };
-  }, []);
+  }, [roomId]);
 
   return (
     <div className="h-screen w-screen bg-black relative flex flex-col overflow-hidden group">
@@ -157,8 +206,10 @@ function VideoCall({
                 {remoteVideoStatus[remoteUsers[0].uid] ? (
                   <div
                     id={`remote-${remoteUsers[0].uid}`}
-                    className="w-full h-full"
-                  ></div>
+                    className="w-full h-full text-2xl animate-pulse"
+                  >
+                    📞 Calling...
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-white">
                     <div className="w-28 h-28 rounded-full bg-gray-700 flex items-center justify-center text-4xl">

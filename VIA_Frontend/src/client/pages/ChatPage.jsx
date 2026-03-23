@@ -17,9 +17,13 @@ export default function ChatPage() {
   const [CallIs, setCalls] = useState(false);
   const [incomingCall, setIncomingCall] = useState(null);
   const [callData, setCallData] = useState(null);
-
-  let roomId,
-    userId = "";
+  const [callTimeout, setCallTime] = useState(null);
+  const [calling, setCalling] = useState(false);
+  const [timeLeftofline, setTimeLeftOfline] = useState(5);
+  const [usersInRoom, setUsersInRoom] = useState([]);
+  //   userId = "";
+  let roomId = callData?.roomId || selectedChat?._id;
+  let userId = selectedChat?.createdBy?._id;
 
   //when video call is on that time sidebar close
 
@@ -32,12 +36,110 @@ export default function ChatPage() {
   const refreshSidebar = () => {
     setRefresh((prev) => !prev);
   };
+  useEffect(() => {
+    if (obj?.token?._id) {
+      socket.emit("register", obj.token._id);
+    }
+  }, [obj]);
 
   useEffect(() => {
     if (obj.token.token == "") {
       navigate("/");
     }
   }, []);
+
+  useEffect(() => {
+    socket.on("incomingCall", (data) => {
+      setIncomingCall(data);
+      setCalling(false);
+    });
+
+    socket.on("callAccepted", ({ roomId }) => {
+      setCalls(true); // open video
+      setCalling(false); // stop ringing
+      setCallData({ roomId });
+    });
+
+    socket.on("callRejected", () => {
+      alert("User rejected your call");
+      setCalls(false);
+      setCalling(false); // stop calling UI
+      setCallTime(null);
+    });
+
+    socket.on("userOffline", () => {
+      setTimeout(() => {
+        alert("User is offline");
+        setCallTime(null);
+
+        setCalls(false); // close video screen (optional)
+      }, 20000);
+
+      setCalling(false); // stop calling UI
+    });
+
+    return () => {
+      socket.off("incomingCall");
+      socket.off("callAccepted");
+      socket.off("callRejected");
+      socket.off("userOffline");
+    };
+  }, []);
+
+  const acceptCall = () => {
+    socket.emit("acceptCall", {
+      to: incomingCall.from,
+      roomId: incomingCall.roomId,
+    });
+
+    setCalls(true);
+    setCallData(incomingCall);
+    setIncomingCall(null);
+  };
+  //AUTO REJECT (TIMEOUT)
+  const [timeLeft, setTimeLeft] = useState(10);
+
+  useEffect(() => {
+    if (!incomingCall) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev === 1) {
+          clearInterval(timer);
+
+          if (incomingCall) {
+            rejectCall();
+          }
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [incomingCall]);
+
+  //RESET TIMER
+  useEffect(() => {
+    if (incomingCall) {
+      setTimeLeft(10); // reset timer
+    }
+  }, [incomingCall]);
+
+  const rejectCall = () => {
+    socket.emit("rejectCall", {
+      to: incomingCall.from,
+    });
+
+    setIncomingCall(null);
+    setCalling(false);
+  };
+
+  useEffect(() => {
+    if (callTimeout) {
+      setCalling(true); // show "Calling..."
+      setCalls(true);
+    }
+  }, [callTimeout]);
 
   return (
     <>
@@ -55,10 +157,18 @@ export default function ChatPage() {
           refreshSidebar={refreshSidebar}
           selectedChat={selectedChat}
           setSelectedChat={setSelectedChat}
-          setCalls={setCalls}
+          setCallTime={setCallTime}
           setSidebarOpen={setSidebarOpen}
+          setUsersInRoom={setUsersInRoom}
         />
       </div>
+
+      {/* 🟣 INCOMING CALL POPUP */}
+      <IncomingCall
+        callData={incomingCall}
+        onAccept={acceptCall}
+        onReject={rejectCall}
+      />
 
       {/* ✅ OVERLAY VIDEO CALL */}
       {CallIs && (
@@ -68,9 +178,17 @@ export default function ChatPage() {
             userId={userId}
             setCalls={setCalls}
             setSidebarOpen={setSidebarOpen}
+            setCallTime={setCallTime}
+            usersInRoom={usersInRoom}
           />
         </div>
       )}
+
+      {/* {calling && !CallIs && (
+        <div className="fixed inset-0 bg-black text-white flex items-center justify-center">
+          <h1>Calling...</h1>
+        </div>
+      )} */}
     </>
   );
 }

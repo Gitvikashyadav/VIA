@@ -4,6 +4,11 @@ module.exports = (io) => {
   io.on("connection", (socket) => {
     console.log("User Connected:", socket.id);
 
+    socket.on("register", (userId) => {
+      users[userId] = socket.id;
+      console.log("User registered:", userId);
+    });
+
     // Join Room
 
     socket.on("joinRoom", (roomId) => {
@@ -34,25 +39,46 @@ module.exports = (io) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("User Disconnected");
+      console.log("User Disconnected:", socket.id);
+
+      for (let userId in users) {
+        if (users[userId] === socket.id) {
+          delete users[userId];
+          console.log("Removed user:", userId);
+          break;
+        }
+      }
     });
 
-    socket.on("register", (userId) => {
-      users[userId] = socket.id;
-      console.log("User registered:", userId);
-    });
+    //HANDLE OFFLINE USER
 
-    socket.on("callUser", ({ to, from, roomId, name }) => {
-      const targetSocket = users[to];
+    socket.on("callRoom", ({ roomId, from, name, usersInRoom }) => {
+      let atLeastOneOnline = false;
 
-      if (targetSocket) {
-        io.to(targetSocket).emit("incomingCall", {
-          from,
-          roomId,
-          name,
-        });
-      } else {
-        socket.emit("userOffline");
+      usersInRoom.forEach((userId) => {
+        if (userId !== from) {
+          const targetSocket = users[userId];
+
+          if (targetSocket) {
+            atLeastOneOnline = true;
+
+            io.to(targetSocket).emit("incomingCall", {
+              from,
+              roomId,
+              name,
+            });
+          }
+        }
+      });
+
+      // ❌ no one online
+      if (!atLeastOneOnline) {
+        const callerSocket = users[from];
+
+        if (callerSocket) {
+          console.log("🚨 Emitting userOffline to:", from);
+          io.to(callerSocket).emit("userOffline");
+        }
       }
     });
 
@@ -70,6 +96,15 @@ module.exports = (io) => {
       if (targetSocket) {
         io.to(targetSocket).emit("callRejected");
       }
+    });
+
+    socket.on("endCall", ({ roomId, usersInRoom }) => {
+      usersInRoom.forEach((userId) => {
+        const targetSocket = users[userId];
+        if (targetSocket) {
+          io.to(targetSocket).emit("callEnded");
+        }
+      });
     });
   });
 };

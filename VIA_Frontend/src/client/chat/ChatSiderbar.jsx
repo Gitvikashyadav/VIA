@@ -15,7 +15,7 @@ export default function ChatSidebar({
   const { isMobile } = useOutletContext();
   const { sidebarOpen } = useOutletContext();
 
-  console.log(isMobile);
+ 
 
   //fetch All Room who user who rooms user exist
 
@@ -27,7 +27,7 @@ export default function ChatSidebar({
 
       setRooms(RooData.data.rooms);
       
-      setSelectedChat();
+      // setSelectedChat();
     };
     findAllRoom();
   }, [Refresh]);

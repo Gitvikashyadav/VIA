@@ -30,4 +30,4 @@ function IncomingCall({ callData, onAccept, onReject }) {
   );
 }
 
-export default IncomingCall;Incom
+export default IncomingCall;

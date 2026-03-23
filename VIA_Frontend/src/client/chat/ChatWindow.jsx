@@ -19,8 +19,8 @@ export default function ChatWindow({
   refreshSidebar,
   selectedChat,
   setSelectedChat,
-  setCalls,
- 
+  setCallTime,
+  setUsersInRoom
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const userData = useContext(ct);
@@ -32,6 +32,9 @@ export default function ChatWindow({
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedRoomUsers, setSelectedRoomUsers] = useState([]);
   const { isMobile, sidebarOpen, setSidebarOpen } = useOutletContext();
+
+  const sendSoundRef = useRef(null);
+  const receiveSoundRef = useRef(null);
 
   //Fetch all user
   const fetchUsers = async () => {
@@ -127,6 +130,19 @@ export default function ChatWindow({
       console.log(error);
     }
   };
+  selectedChat ? console.log(selectedChat.users) : "";
+
+  const handleVideoCall = () => {
+    
+    socket.emit("callRoom", {
+      roomId: selectedChat._id,
+      from: userData.token._id,
+      name: userData.token.name,
+      usersInRoom: selectedChat.users.map((u) => u._id), // 🔥 IMPORTANT
+    });
+    setCallTime(true);
+    setUsersInRoom(selectedChat.users.map((u) => u._id)); // 🔥 pass this up
+  };
 
   //Chat logic starta here
   const [messages, setMessages] = useState([]);
@@ -155,7 +171,12 @@ export default function ChatWindow({
   useEffect(() => {
     socket.on("receiveMessage", (msg) => {
       setMessages((prev) => [...prev, msg]);
+      // 🔊 play only if message is from OTHER user
+      if (msg.sender._id !== userId) {
+        receiveSoundRef.current?.play();
+      }
     });
+    return () => socket.off("receiveMessage");
   }, []);
 
   const sendMessage = () => {
@@ -164,6 +185,7 @@ export default function ChatWindow({
       senderId: userId,
       message: text,
     });
+    sendSoundRef.current?.play(); // 🔊 play send sound
 
     setText("");
   };
@@ -208,8 +230,7 @@ export default function ChatWindow({
   }
 
   // 🔹 NO CHAT SELECTED
-
-  if ((!selectedChat && !isMobile) || !sidebarOpen) {
+  if (!selectedChat && !isMobile) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -223,6 +244,26 @@ export default function ChatWindow({
             No chat selected
           </h2>
 
+          <p className="text-gray-400 mt-2">
+            Select a conversation to start messaging
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedChat && isMobile && !sidebarOpen) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <img
+            className="w-250 mx-auto mb-6"
+            src="/photo/Nochatimg.png"
+            alt="No chat"
+          />
+          <h2 className="text-3xl font-semibold text-gray-600">
+            No chat selected
+          </h2>
           <p className="text-gray-400 mt-2">
             Select a conversation to start messaging
           </p>
@@ -280,7 +321,7 @@ export default function ChatWindow({
                       color="bg-red-500"
                     />
                   </div>
-                  <div onClick={() => setCalls(true) }>
+                  <div onClick={handleVideoCall}>
                     <IconButton
                       icon={<FaVideo />}
                       label="Video Call"
@@ -318,7 +359,7 @@ export default function ChatWindow({
                       <button onClick={fetchParticularRoomusers}>
                         Remove User
                       </button>
-                      <button onClick={() => setCalls(true)}>Video Call</button>
+                      <button onClick={handleVideoCall}>Video Call</button>
                       <button onClick={DeleteRoom}>Exit Room</button>
                       <button>Lock Room</button>
                     </div>
@@ -472,6 +513,9 @@ export default function ChatWindow({
             </div>
           </div>
         )}
+
+        <audio ref={sendSoundRef} src="/Send.mp3" />
+        <audio ref={receiveSoundRef} src="/Recive.mp3" />
       </>
     );
   }
