@@ -188,11 +188,7 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* {calling && !CallIs && (
-        <div className="fixed inset-0 bg-black text-white flex items-center justify-center">
-          <h1>Calling...</h1>
-        </div>
-      )} */}
+      
     </>
   );
 }

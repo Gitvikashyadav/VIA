@@ -14,6 +14,7 @@ import axios from "axios";
 import { ct } from "../../app/App";
 import socket from "../socket/socket";
 import { useOutletContext } from "react-router-dom";
+import { BASE_URL } from "./config"
 
 export default function ChatWindow({
   refreshSidebar,
@@ -39,7 +40,7 @@ export default function ChatWindow({
   //Fetch all user
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/user/get-Alluser");
+      const res = await axios.get(`${BASE_URL}/api/user/get-Alluser`);
 
       const data = res.data;
 
@@ -53,7 +54,7 @@ export default function ChatWindow({
   const fetchParticularRoomusers = async () => {
     try {
       const Roomdata = await axios.get(
-        `http://localhost:5000/api/chat/rooms-users/${selectedChat._id}`,
+        `${BASE_URL}/api/chat/rooms-users/${selectedChat._id}`,
       );
 
       setRoomUsers([...Roomdata.data[0].users.slice(1)]);
@@ -85,7 +86,7 @@ export default function ChatWindow({
   //Add user to Room
   const addUsersToRoom = async () => {
     try {
-      await axios.post("http://localhost:5000/api/chat/add-users", {
+      await axios.post(`${BASE_URL}/api/chat/add-users`, {
         roomId: selectedChat._id,
         users: selectedUsers,
       });
@@ -101,7 +102,7 @@ export default function ChatWindow({
 
   const RemoveUsersToRoom = async () => {
     try {
-      await axios.post("http://localhost:5000/api/chat/Remove-RoomUsers", {
+      await axios.post(`${BASE_URL}/api/chat/Remove-RoomUsers`, {
         roomId: selectedChat._id,
         users: selectedRoomUsers,
       });
@@ -118,7 +119,7 @@ export default function ChatWindow({
   const DeleteRoom = async () => {
     try {
       const mess = await axios.post(
-        "http://localhost:5000/api/chat/Delete-room",
+        `${BASE_URL}/api/chat/Delete-room`,
         {
           roomId: selectedChat._id,
           userId: userData.token._id,
@@ -157,7 +158,7 @@ export default function ChatWindow({
     socket.emit("joinRoom", roomId);
 
     axios
-      .get(`http://localhost:5000/api/chat/messages/${roomId}`)
+      .get(`${BASE_URL}/api/chat/messages/${roomId}`)
       .then((res) => {
         setMessages(res.data);
       });

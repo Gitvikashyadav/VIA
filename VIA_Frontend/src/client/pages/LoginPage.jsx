@@ -3,6 +3,8 @@ import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { ct } from "../../app/App";
 import Cookies from "js-cookie";
+import { BASE_URL } from "./config"
+
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ export default function LoginPage() {
   const handleSubmitL = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+       `${BASE_URL}/api/auth/login`,
         formData,
       );
       setSuccess("successfully Login 🎉 ");

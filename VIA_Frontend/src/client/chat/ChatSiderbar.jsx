@@ -3,7 +3,7 @@ import { useState, useContext, useEffect, createContext } from "react";
 import { Plus, Users } from "lucide-react";
 import { ct } from "../../app/App";
 import { useOutletContext } from "react-router-dom";
-
+import { BASE_URL } from "./config"
 export default function ChatSidebar({
   Refresh,
   selectedChat,
@@ -22,7 +22,7 @@ export default function ChatSidebar({
   useEffect(() => {
     const findAllRoom = async () => {
       const RooData = await axios.get(
-        `http://localhost:5000/api/chat/creator-rooms/${userData.token._id}`,
+        `${BASE_URL}/api/chat/creator-rooms/${userData.token._id}`,
       );
 
       setRooms(RooData.data.rooms);
@@ -43,7 +43,7 @@ export default function ChatSidebar({
       isGroup: true,
     };
     const RoomData = await axios.post(
-      "http://localhost:5000/api/chat/create-room",
+      `${BASE_URL}/api/chat/create-room`,
       newRoom,
     );
     
