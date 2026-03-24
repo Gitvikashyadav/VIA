@@ -62,7 +62,7 @@ server.listen(PORT,()=>{
 
 
 
-
+app.use("/")
 
 
 app.use("/api/auth", authRoutes)

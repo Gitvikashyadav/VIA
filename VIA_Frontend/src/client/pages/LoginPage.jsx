@@ -1,52 +1,70 @@
-import { useNavigate, Link } from "react-router-dom"
-import { useState,useContext } from "react"
-import axios from "axios"
-import { ct } from "../../app/App"
-
-
+import { useNavigate, Link } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import axios from "axios";
+import { ct } from "../../app/App";
+import Cookies from "js-cookie";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const obj = useContext(ct);
 
-const navigate=useNavigate()
-const obj=useContext(ct)
-
-  const [success,setSuccess]=useState()
+  const [success, setSuccess] = useState();
   const [formData, setFormData] = useState({
-      email: "",
-      password: ""
-      
-    })
+    email: "",
+    password: "",
+  });
 
-    const handleChange = (e) => {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  const handleSubmitL=async()=>{
-    try{
-     
-     
-     const res=await axios.post("http://localhost:5000/api/auth/login",formData)
-     setSuccess("successfully Login 🎉 ")
-    
-     obj.updateToken({"token":res.data.token,"name":res.data.user.name,"_id":res.data.user._id})
-     navigate("/chatpage")
-  
-  }catch(err){
-    setSuccess("Error Login  ")
+  const handleSubmitL = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData,
+      );
+      setSuccess("successfully Login 🎉 ");
 
+      const userData = {
+        token: res.data.token,
+        name: res.data.user.name,
+        _id: res.data.user._id,
+      };
+      obj.updateToken({
+        token: res.data.token,
+        name: res.data.user.name,
+        _id: res.data.user._id,
+      });
+
+      // Save to cookie — expires in 7 days
+
+      Cookies.set("auth", JSON.stringify(userData), {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
+
+      navigate("/chatpage");
+    } catch (err) {
+      setSuccess("Error Login  ");
     }
+  };
+
+  useEffect(()=>{
+      if (obj.token) {
+    navigate("/chatpage");
   }
 
+  },[])
 
 
 
- 
   return (
     <div className="h-screen flex items-center justify-center bg-primary">
-      
       <div className="bg-white p-8 rounded-xl shadow-lg w-96">
         {success && (
           <div className="flex items-center justify-center mb-4 p-3 bg-green-100 text-green-600 rounded-lg text-sm">
@@ -57,7 +75,7 @@ const obj=useContext(ct)
 
         <input
           type="email"
-          placeholder="Email"  
+          placeholder="Email"
           className="w-full mb-4 p-3 border rounded-lg"
           name="email"
           onChange={handleChange}
@@ -71,11 +89,14 @@ const obj=useContext(ct)
           onChange={handleChange}
         />
 
-        <button className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-700" onClick={handleSubmitL}>
+        <button
+          className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-700"
+          onClick={handleSubmitL}
+        >
           Login
         </button>
-        <p className="text-center text-sm text-gray-500 mt-6" >
-           if Account does'nt exist ?{" "}
+        <p className="text-center text-sm text-gray-500 mt-6">
+          if Account does'nt exist ?{" "}
           <Link
             to="/register"
             className="text-blue-600 font-medium hover:underline"
@@ -84,7 +105,6 @@ const obj=useContext(ct)
           </Link>
         </p>
       </div>
-      
     </div>
-  )
+  );
 }

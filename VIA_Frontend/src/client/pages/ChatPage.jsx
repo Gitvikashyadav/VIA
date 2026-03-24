@@ -6,7 +6,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import VideoCall from "../components/VideoCall";
 import socket from "../socket/socket";
 import IncomingCall from "../components/IncomingCall";
-
+import Cookies from "js-cookie";
 export default function ChatPage() {
   let obj = useContext(ct);
   let navigate = useNavigate();
@@ -27,6 +27,14 @@ export default function ChatPage() {
 
   //when video call is on that time sidebar close
 
+
+ useEffect(() => {
+    const savedAuth = Cookies.get("auth");
+    if (!obj.token && !savedAuth) {
+      navigate("/login");
+    }
+  }, []);
+
   if (selectedChat) {
     roomId = selectedChat._id;
 
@@ -42,11 +50,7 @@ export default function ChatPage() {
     }
   }, [obj]);
 
-  useEffect(() => {
-    if (obj.token.token == "") {
-      navigate("/");
-    }
-  }, []);
+  
 
   useEffect(() => {
     socket.on("incomingCall", (data) => {
