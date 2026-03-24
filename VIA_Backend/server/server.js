@@ -11,8 +11,6 @@ const UserRouter = require("./routes/userRoute");
 const agoraRoutes = require("./routes/agoraRoutes");
 const chatSocket = require("./sockets/chatSocket");
 
-const chatSocket = require("./sockets/chatSocket");
-
 const app = express();
 
 // Middleware
@@ -43,7 +41,6 @@ chatSocket(io);
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-
 
 app.use("/api/auth", authRoutes);
 
