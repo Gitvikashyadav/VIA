@@ -3,7 +3,7 @@ import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { ct } from "../../app/App";
 import Cookies from "js-cookie";
-import { BASE_URL } from "./config"
+import { BASE_URL } from "../../config"
 
 
 export default function LoginPage() {

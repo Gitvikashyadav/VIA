@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axios from "axios"
-import { BASE_URL } from "./config"
+import { BASE_URL } from "../../config"
 
 export default function RegisterPage() {
   const navigate = useNavigate()
