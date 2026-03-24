@@ -3,7 +3,7 @@ import { useState, useContext, useEffect, createContext } from "react";
 import { Plus, Users } from "lucide-react";
 import { ct } from "../../app/App";
 import { useOutletContext } from "react-router-dom";
-import { BASE_URL } from "../../../config"
+import { BASE_URL } from "../../config"
 export default function ChatSidebar({
   Refresh,
   selectedChat,

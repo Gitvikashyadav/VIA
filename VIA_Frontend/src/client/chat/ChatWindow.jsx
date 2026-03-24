@@ -14,7 +14,7 @@ import axios from "axios";
 import { ct } from "../../app/App";
 import socket from "../socket/socket";
 import { useOutletContext } from "react-router-dom";
-import { BASE_URL } from "../../../config"
+import { BASE_URL } from "../../config"
 
 
 export default function ChatWindow({

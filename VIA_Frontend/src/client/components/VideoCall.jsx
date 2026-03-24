@@ -3,7 +3,7 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import axios from "axios";
 import socket from "../socket/socket";
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
-
+import { BASE_URL } from "../../config"
 const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
 function VideoCall({
@@ -115,7 +115,7 @@ function VideoCall({
       try {
         const uid = Math.floor(Math.random() * 100000);
 
-        const res = await axios.post("http://localhost:5000/api/agora/token", {
+        const res = await axios.post(`${BASE_URL}/api/agora/token`, {
           channelName: roomId,
           uid,
         });
