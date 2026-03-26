@@ -152,12 +152,29 @@ export default function ChatWindow({
   let userId = userData.token._id;
 
   // join room
-  useEffect(() => {
-    socket.emit("joinRoom", roomId);
+  // useEffect(() => {
+  //   socket.emit("joinRoom", roomId);
 
-    axios.get(`${BASE_URL}/api/chat/messages/${roomId}`).then((res) => {
-      setMessages(res.data);
-    });
+  //   axios.get(`${BASE_URL}/api/chat/messages/${roomId}`).then((res) => {
+  //     setMessages(res.data);
+  //   });
+
+  //   return () => {
+  //     socket.emit("leaveRoom", roomId);
+  //   };
+  // }, [roomId]);
+  useEffect(() => {
+    if (!roomId) return; // ✅ IMPORTANT FIX
+
+    socket.emit("joinRoom", roomId);
+    console.log(res.data);
+
+    axios
+      .get(`${BASE_URL}/api/chat/messages/${roomId}`)
+      .then((res) => {
+        setMessages(res.data);
+      })
+      .catch((err) => console.log(err));
 
     return () => {
       socket.emit("leaveRoom", roomId);
