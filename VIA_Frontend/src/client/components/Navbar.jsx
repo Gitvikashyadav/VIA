@@ -27,7 +27,10 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
       </div>
 
       <div className="flex gap-4">
-        <button className="bg-black px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+        <button
+          className="bg-black px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+          onClick={`https://github.com/Gitvikashyadav/VIA`}
+        >
           GitHub
         </button>
         <button

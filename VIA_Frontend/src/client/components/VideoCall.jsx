@@ -3,7 +3,7 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import axios from "axios";
 import socket from "../socket/socket";
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
-import { BASE_URL } from "../../config"
+import { BASE_URL } from "../../config";
 const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
 function VideoCall({
@@ -79,20 +79,6 @@ function VideoCall({
     setCalls(false);
   };
 
-  // const handleEndCall = async () => {
-  //   localTracks.forEach((track) => track.stop());
-  //   localTracks.forEach((track) => track.close());
-
-  //   await client.leave(); // leave Agora channel
-  //   setRemoteUsers([]);
-  //   setLocalTracks([]);
-  //   setRemoteVideoStatus({});
-  //   setMicOn(true);
-  //   setVideoOn(true);
-  //   setCallTime(null);
-  //   setCalls(false);
-  // };
-
   const handleEndCall = async () => {
     socket.emit("endCall", { roomId, usersInRoom }); // 🔥 notify others
     await cleanupCall();
@@ -136,7 +122,6 @@ function VideoCall({
         client.on("user-published", async (user, mediaType) => {
           await client.subscribe(user, mediaType);
 
-          
           setRemoteUsers((prev) => {
             if (prev.find((u) => u.uid === user.uid)) return prev;
             return [...prev, user];
@@ -206,9 +191,9 @@ function VideoCall({
                 {remoteVideoStatus[remoteUsers[0].uid] ? (
                   <div
                     id={`remote-${remoteUsers[0].uid}`}
-                    className="w-full h-full text-2xl animate-pulse"
+                    className="w-full h-full text-2xl " //animate-pulse
                   >
-                    📞 Calling...
+                    {/* 📞 Calling... */}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-white">

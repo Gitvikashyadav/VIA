@@ -27,8 +27,7 @@ export default function ChatPage() {
 
   //when video call is on that time sidebar close
 
-
- useEffect(() => {
+  useEffect(() => {
     const savedAuth = Cookies.get("auth");
     if (!obj.token && !savedAuth) {
       navigate("/login");
@@ -49,8 +48,6 @@ export default function ChatPage() {
       socket.emit("register", obj.token._id);
     }
   }, [obj]);
-
-  
 
   useEffect(() => {
     socket.on("incomingCall", (data) => {
@@ -187,8 +184,6 @@ export default function ChatPage() {
           />
         </div>
       )}
-
-      
     </>
   );
 }

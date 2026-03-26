@@ -1,66 +1,62 @@
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import axios from "axios"
-import { BASE_URL } from "../../config"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+import { BASE_URL } from "../../config";
 
 export default function RegisterPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
-  })
+    confirmPassword: "",
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
-    setSuccess("")
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
-      return setError("Passwords do not match")
+      return setError("Passwords do not match");
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       await axios.post(`${BASE_URL}/api/auth/regi`, {
         name: formData.name,
         email: formData.email,
-        password: formData.password
-      })
+        password: formData.password,
+      });
 
-      setSuccess("Account created successfully 🎉")
+      setSuccess("Account created successfully 🎉");
 
       setTimeout(() => {
-        navigate("/")
-      }, 1500)
-
+        navigate("/");
+      }, 1500);
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Something went wrong"
-      )
+      setError(err.response?.data?.message || "Something went wrong");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50  bg-primary">
       <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl">
-
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
           Create Account
         </h2>
@@ -81,11 +77,8 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Full Name
-            </label>
+            <label className="block text-sm font-medium mb-1">Full Name</label>
             <input
               type="text"
               name="name"
@@ -111,9 +104,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Password
-            </label>
+            <label className="block text-sm font-medium mb-1">Password</label>
             <input
               type="password"
               name="password"
@@ -146,20 +137,15 @@ export default function RegisterPage() {
           >
             {loading ? "Creating Account..." : "Register"}
           </button>
-
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
           Already have an account?{" "}
-          <Link
-            to="/"
-            className="text-blue-600 font-medium hover:underline"
-          >
+          <Link to="/" className="text-blue-600 font-medium hover:underline">
             Login
           </Link>
         </p>
-
       </div>
     </div>
-  )
+  );
 }

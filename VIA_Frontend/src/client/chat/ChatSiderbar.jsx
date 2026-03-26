@@ -3,7 +3,7 @@ import { useState, useContext, useEffect, createContext } from "react";
 import { Plus, Users } from "lucide-react";
 import { ct } from "../../app/App";
 import { useOutletContext } from "react-router-dom";
-import { BASE_URL } from "../../config"
+import { BASE_URL } from "../../config";
 export default function ChatSidebar({
   Refresh,
   selectedChat,
@@ -15,8 +15,6 @@ export default function ChatSidebar({
   const { isMobile } = useOutletContext();
   const { sidebarOpen } = useOutletContext();
 
- 
-
   //fetch All Room who user who rooms user exist
 
   useEffect(() => {
@@ -26,7 +24,7 @@ export default function ChatSidebar({
       );
 
       setRooms(RooData.data.rooms);
-      
+
       // setSelectedChat();
     };
     findAllRoom();
@@ -46,7 +44,6 @@ export default function ChatSidebar({
       `${BASE_URL}/api/chat/create-room`,
       newRoom,
     );
-    
 
     setRooms([...rooms, RoomData.data.room]);
     setRoomName("");
@@ -55,7 +52,7 @@ export default function ChatSidebar({
   return (
     <div
       className={`${
-        isMobile && selectedChat? "hidden" : "flex"
+        isMobile && selectedChat ? "hidden" : "flex"
       } w-80 h-full bg-white flex-col shadow-[6px_0_8px_rgba(0,0,0,0.08)] overflow-hidden min-h-0`}
     >
       {/* Room List */}

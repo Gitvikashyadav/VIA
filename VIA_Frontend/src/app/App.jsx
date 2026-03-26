@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 function App() {
   const savedAuth = Cookies.get("auth");
   const initialToken = savedAuth ? JSON.parse(savedAuth) : null;
-  const [token, setToken] = useState(initialToken)
+  const [token, setToken] = useState(initialToken);
   const updateToken = (Data) => {
     setToken(Data);
   };

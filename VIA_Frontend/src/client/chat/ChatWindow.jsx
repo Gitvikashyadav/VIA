@@ -14,15 +14,14 @@ import axios from "axios";
 import { ct } from "../../app/App";
 import socket from "../socket/socket";
 import { useOutletContext } from "react-router-dom";
-import { BASE_URL } from "../../config"
-
+import { BASE_URL } from "../../config";
 
 export default function ChatWindow({
   refreshSidebar,
   selectedChat,
   setSelectedChat,
   setCallTime,
-  setUsersInRoom
+  setUsersInRoom,
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const userData = useContext(ct);
@@ -38,6 +37,8 @@ export default function ChatWindow({
   const sendSoundRef = useRef(null);
   const receiveSoundRef = useRef(null);
 
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
   //Fetch all user
   const fetchUsers = async () => {
     try {
@@ -119,13 +120,10 @@ export default function ChatWindow({
 
   const DeleteRoom = async () => {
     try {
-      const mess = await axios.post(
-        `${BASE_URL}/api/chat/Delete-room`,
-        {
-          roomId: selectedChat._id,
-          userId: userData.token._id,
-        },
-      );
+      const mess = await axios.post(`${BASE_URL}/api/chat/Delete-room`, {
+        roomId: selectedChat._id,
+        userId: userData.token._id,
+      });
 
       refreshSidebar();
     } catch (error) {
@@ -135,7 +133,6 @@ export default function ChatWindow({
   selectedChat ? console.log(selectedChat.users) : "";
 
   const handleVideoCall = () => {
-    
     socket.emit("callRoom", {
       roomId: selectedChat._id,
       from: userData.token._id,
@@ -158,11 +155,9 @@ export default function ChatWindow({
   useEffect(() => {
     socket.emit("joinRoom", roomId);
 
-    axios
-      .get(`${BASE_URL}/api/chat/messages/${roomId}`)
-      .then((res) => {
-        setMessages(res.data);
-      });
+    axios.get(`${BASE_URL}/api/chat/messages/${roomId}`).then((res) => {
+      setMessages(res.data);
+    });
 
     return () => {
       socket.emit("leaveRoom", roomId);
@@ -212,6 +207,53 @@ export default function ChatWindow({
       behavior: "smooth",
     });
   };
+
+  //Speech Reconigation
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) return;
+
+    if (isListening) {
+      recognitionRef.current.stop(); // stop manually
+    } else {
+      recognitionRef.current.start(); // start listening
+    }
+  };
+
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Speech Recognition not supported in this browser");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false; // auto stop
+    recognition.interimResults = true; // live typing
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+
+      setText(transcript); // ✅ fill input
+    };
+
+    recognitionRef.current = recognition;
+  }, []);
 
   function IconButton({ icon, label, color }) {
     return (
@@ -421,7 +463,17 @@ export default function ChatWindow({
               value={text}
             />
 
-            <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+            {/* <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+              <FaMicrophone />
+            </button> */}
+            <button
+              onClick={handleMicClick}
+              className={`p-3 rounded-lg transition ${
+                isListening
+                  ? "bg-red-500 animate-pulse" // 🔴 blinking effect
+                  : "bg-blue-600 hover:bg-blue-700"
+              } text-white`}
+            >
               <FaMicrophone />
             </button>
 

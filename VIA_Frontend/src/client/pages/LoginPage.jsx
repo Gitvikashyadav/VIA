@@ -3,8 +3,7 @@ import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { ct } from "../../app/App";
 import Cookies from "js-cookie";
-import { BASE_URL } from "../../config"
-
+import { BASE_URL } from "../../config";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -25,10 +24,7 @@ export default function LoginPage() {
 
   const handleSubmitL = async () => {
     try {
-      const res = await axios.post(
-       `${BASE_URL}/api/auth/login`,
-        formData,
-      );
+      const res = await axios.post(`${BASE_URL}/api/auth/login`, formData);
       setSuccess("successfully Login 🎉 ");
 
       const userData = {
@@ -56,14 +52,11 @@ export default function LoginPage() {
     }
   };
 
-  useEffect(()=>{
-      if (obj.token) {
-    navigate("/chatpage");
-  }
-
-  },[])
-
-
+  useEffect(() => {
+    if (obj.token) {
+      navigate("/chatpage");
+    }
+  }, []);
 
   return (
     <div className="h-screen flex items-center justify-center bg-primary">
