@@ -167,12 +167,12 @@ export default function ChatWindow({
     if (!roomId) return; // ✅ IMPORTANT FIX
 
     socket.emit("joinRoom", roomId);
-    console.log(res.data);
 
     axios
       .get(`${BASE_URL}/api/chat/messages/${roomId}`)
       .then((res) => {
         setMessages(res.data);
+        console.log(res.data);
       })
       .catch((err) => console.log(err));
 
@@ -194,6 +194,8 @@ export default function ChatWindow({
   }, []);
 
   const sendMessage = () => {
+    console.log(text);
+    
     socket.emit("sendMessage", {
       roomId,
       senderId: userId,
@@ -480,9 +482,7 @@ export default function ChatWindow({
               value={text}
             />
 
-            {/* <button className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
-              <FaMicrophone />
-            </button> */}
+            
             <button
               onClick={handleMicClick}
               className={`p-3 rounded-lg transition ${
