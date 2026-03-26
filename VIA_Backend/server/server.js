@@ -14,7 +14,10 @@ const chatSocket = require("./sockets/chatSocket");
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors(({
+  origin: "https://via-frontend2.onrender.com",
+  methods: ["GET", "POST"]
+})));
 app.use(express.json());
 // Connect Database
 connectDB();
