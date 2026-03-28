@@ -14,10 +14,12 @@ const chatSocket = require("./sockets/chatSocket");
 const app = express();
 
 // Middleware
-app.use(cors(({
-  origin: "https://via-frontend2.onrender.com",
-  methods: ["GET", "POST"]
-})));
+app.use(
+  cors({
+    origin: "https://via-frontend2.onrender.com",
+    methods: ["GET", "POST"],
+  }),
+);
 app.use(express.json());
 // Connect Database
 connectDB();
@@ -34,8 +36,6 @@ const io = new Server(server, {
     origin: "https://via-frontend2.onrender.com",
   },
 });
-
-// import socket logic
 
 // run socket logic
 chatSocket(io);

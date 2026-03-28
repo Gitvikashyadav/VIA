@@ -1,8 +1,8 @@
-const express = require("express")
-const UserRouter = express.Router()
+const express = require("express");
+const UserRouter = express.Router();
 
-const {getAlluser}=require("../controllers/userController")
+const { getAlluser } = require("../controllers/userController");
 
-UserRouter.get("/get-Alluser",getAlluser)
+UserRouter.get("/get-Alluser", getAlluser);
 
-module.exports=UserRouter
+module.exports = UserRouter;

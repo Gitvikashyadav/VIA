@@ -29,7 +29,9 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
       <div className="flex gap-4">
         <button
           className="bg-black px-4 py-2 rounded-lg hover:bg-gray-800 transition"
-          onClick={`https://github.com/Gitvikashyadav/VIA`}
+          onClick={() =>
+            window.open("https://github.com/Gitvikashyadav/VIA", "_blank")
+          }
         >
           GitHub
         </button>
