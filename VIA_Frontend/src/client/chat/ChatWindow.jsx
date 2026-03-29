@@ -15,6 +15,7 @@ import { ct } from "../../app/App";
 import socket from "../socket/socket";
 import { useOutletContext } from "react-router-dom";
 import { BASE_URL } from "../../config";
+import { toast } from "react-toastify";
 
 export default function ChatWindow({
   refreshSidebar,
@@ -95,8 +96,9 @@ export default function ChatWindow({
 
       setShowModal(false);
       setSelectedUsers([]);
+      toast.success("Add user In Room Successful ✅");
     } catch (err) {
-      console.log(err);
+      toast.error("Add user In Room Failed ❌");
     }
   };
 
@@ -111,8 +113,9 @@ export default function ChatWindow({
 
       setRemoveShowModal(false);
       setSelectedRoomUsers([]);
+      toast.success("Remove User Successful ✅");
     } catch (err) {
-      console.log(err);
+      toast.error("Remove user Failed ❌");
     }
   };
 
@@ -126,8 +129,9 @@ export default function ChatWindow({
       });
 
       refreshSidebar();
+      toast.success("Delete Room  Successful ✅");
     } catch (error) {
-      console.log(error);
+      toast.error("Delete Room Failed ❌");
     }
   };
   selectedChat ? console.log(selectedChat.users) : "";
@@ -151,18 +155,6 @@ export default function ChatWindow({
   selectedChat ? (roomId = selectedChat._id) : (roomId = "");
   let userId = userData.token._id;
 
-  // join room
-  // useEffect(() => {
-  //   socket.emit("joinRoom", roomId);
-
-  //   axios.get(`${BASE_URL}/api/chat/messages/${roomId}`).then((res) => {
-  //     setMessages(res.data);
-  //   });
-
-  //   return () => {
-  //     socket.emit("leaveRoom", roomId);
-  //   };
-  // }, [roomId]);
   useEffect(() => {
     if (!roomId) return; // ✅ IMPORTANT FIX
 
@@ -195,7 +187,7 @@ export default function ChatWindow({
 
   const sendMessage = () => {
     console.log(text);
-    
+
     socket.emit("sendMessage", {
       roomId,
       senderId: userId,
@@ -482,7 +474,6 @@ export default function ChatWindow({
               value={text}
             />
 
-            
             <button
               onClick={handleMicClick}
               className={`p-3 rounded-lg transition ${

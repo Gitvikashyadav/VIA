@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../config";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -41,13 +42,13 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
       });
-
-      setSuccess("Account created successfully 🎉");
+      toast.success("Account created successfully 🎉");
 
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (err) {
+      toast.error("Register Failed ❌");
       setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);

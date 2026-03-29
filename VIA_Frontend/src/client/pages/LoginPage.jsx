@@ -4,6 +4,8 @@ import axios from "axios";
 import { ct } from "../../app/App";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../../config";
+import { toast } from "react-toastify";
+
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -25,7 +27,8 @@ export default function LoginPage() {
   const handleSubmitL = async () => {
     try {
       const res = await axios.post(`${BASE_URL}/api/auth/login`, formData);
-      setSuccess("successfully Login 🎉 ");
+      // setSuccess("successfully Login 🎉 ");
+      toast.success("successfully Login 🎉");
 
       const userData = {
         token: res.data.token,
@@ -48,7 +51,8 @@ export default function LoginPage() {
 
       navigate("/chatpage");
     } catch (err) {
-      setSuccess("Error Login  ");
+       toast.error("Login Failed ❌");
+      // setSuccess("Error Login  ");
     }
   };
 

@@ -4,6 +4,9 @@ import { Plus, Users } from "lucide-react";
 import { ct } from "../../app/App";
 import { useOutletContext } from "react-router-dom";
 import { BASE_URL } from "../../config";
+import { toast } from "react-toastify";
+
+
 export default function ChatSidebar({
   Refresh,
   selectedChat,
@@ -47,6 +50,7 @@ export default function ChatSidebar({
 
     setRooms([...rooms, RoomData.data.room]);
     setRoomName("");
+    toast.success("Room Create Successful ✅");
   };
 
   return (
