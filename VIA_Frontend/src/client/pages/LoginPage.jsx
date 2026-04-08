@@ -100,7 +100,7 @@ export default function LoginPage() {
             to="/register"
             className="text-blue-600 font-medium hover:underline"
           >
-            Register new
+           Don’t have an account? Sign up
           </Link>
         </p>
       </div>
