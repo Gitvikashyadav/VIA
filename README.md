@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>VIA (Video Interaction Application)</h1>
+  <h1>VIA (Video And Chat Interaction Application)</h1>
 </div>
 
 # Live on https://via-frontend2.onrender.com
